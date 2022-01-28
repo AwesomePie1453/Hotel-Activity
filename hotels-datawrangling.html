@@ -816,27 +816,114 @@ hotels &lt;- read_csv(&quot;./data/hotels.csv&quot;)</code></pre>
 <div id="exercise-5." class="section level3">
 <h3>Exercise 5.</h3>
 <p>Create a frequency table of the number of <code>adults</code> in a booking. Display the results in descending order so the most common observation is on top. What is the most common number of adults in bookings in this dataset? Are there any surprising results?</p>
-<p><strong>Note:</strong> Don’t forget to label your R chunk as well (where it says <code>label-me-1</code>). Your label should be short, informative, and shouldn’t include spaces. It also shouldn’t repeat a previous label, otherwise R Markdown will give you an error about repeated R chunk labels.</p>
+<p>The most is 2 adults. 403 with no adults is suprirsing- kids rule the world? Also 26 and 27 is there but no 21-25? And missing many of the teens. Weird</p>
+<pre class="r"><code>hotels %&gt;%
+  count(adults)%&gt;%
+  arrange(desc(n))</code></pre>
+<pre><code>## # A tibble: 14 × 2
+##    adults     n
+##     &lt;dbl&gt; &lt;int&gt;
+##  1      2 89680
+##  2      1 23027
+##  3      3  6202
+##  4      0   403
+##  5      4    62
+##  6     26     5
+##  7      5     2
+##  8     20     2
+##  9     27     2
+## 10      6     1
+## 11     10     1
+## 12     40     1
+## 13     50     1
+## 14     55     1</code></pre>
 </div>
 <div id="exercise-6." class="section level3">
 <h3>Exercise 6.</h3>
 <p>Repeat Exercise 5, once for canceled bookings (<code>is_canceled</code> coded as 1) and once for not canceled bookings (<code>is_canceled</code> coded as 0). What does this reveal about the surprising results you spotted in the previous exercise?</p>
 <p><strong>Note:</strong> Don’t forget to label your R chunk as well (where it says <code>label-me-2</code>).</p>
-<pre class="r"><code># add code here
-# pay attention to correctness and code style</code></pre>
+<pre class="r"><code>hotels %&gt;%
+  count(adults, is_canceled == 1)%&gt;%
+  arrange(desc(n))</code></pre>
+<pre><code>## # A tibble: 19 × 3
+##    adults `is_canceled == 1`     n
+##     &lt;dbl&gt; &lt;lgl&gt;              &lt;int&gt;
+##  1      2 FALSE              54422
+##  2      2 TRUE               35258
+##  3      1 FALSE              16353
+##  4      1 TRUE                6674
+##  5      3 FALSE               4051
+##  6      3 TRUE                2151
+##  7      0 FALSE                294
+##  8      0 TRUE                 109
+##  9      4 FALSE                 46
+## 10      4 TRUE                  16
+## 11     26 TRUE                   5
+## 12      5 TRUE                   2
+## 13     20 TRUE                   2
+## 14     27 TRUE                   2
+## 15      6 TRUE                   1
+## 16     10 TRUE                   1
+## 17     40 TRUE                   1
+## 18     50 TRUE                   1
+## 19     55 TRUE                   1</code></pre>
+<pre class="r"><code>hotels %&gt;%
+  count(adults, is_canceled == 0)%&gt;%
+  arrange(desc(n))</code></pre>
+<pre><code>## # A tibble: 19 × 3
+##    adults `is_canceled == 0`     n
+##     &lt;dbl&gt; &lt;lgl&gt;              &lt;int&gt;
+##  1      2 TRUE               54422
+##  2      2 FALSE              35258
+##  3      1 TRUE               16353
+##  4      1 FALSE               6674
+##  5      3 TRUE                4051
+##  6      3 FALSE               2151
+##  7      0 TRUE                 294
+##  8      0 FALSE                109
+##  9      4 TRUE                  46
+## 10      4 FALSE                 16
+## 11     26 FALSE                  5
+## 12      5 FALSE                  2
+## 13     20 FALSE                  2
+## 14     27 FALSE                  2
+## 15      6 FALSE                  1
+## 16     10 FALSE                  1
+## 17     40 FALSE                  1
+## 18     50 FALSE                  1
+## 19     55 FALSE                  1</code></pre>
+<p>Most of the children parties canceled!</p>
 </div>
 <div id="exercise-7." class="section level3">
 <h3>Exercise 7.</h3>
 <p>Calculate minimum, mean, median, and maximum average daily rate (<code>adr</code>) grouped by <code>hotel</code> type so that you can get these statistics separately for resort and city hotels. Which type of hotel is higher, on average?</p>
-<pre class="r"><code># add code here
-# pay attention to correctness and code style</code></pre>
+<p>City hotel</p>
+<pre class="r"><code>hotels%&gt;%
+  group_by(hotel)%&gt;%
+  summarize(min_adr = min(adr), mean_adr=mean(adr), median_adr=median(adr), max_adr = max(adr))</code></pre>
+<pre><code>## # A tibble: 2 × 5
+##   hotel        min_adr mean_adr median_adr max_adr
+##   &lt;chr&gt;          &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;
+## 1 City Hotel      0       105.        99.9    5400
+## 2 Resort Hotel   -6.38     95.0       75       508</code></pre>
 </div>
 <div id="exercise-8." class="section level3">
 <h3>Exercise 8.</h3>
 <p>We observe two unusual values in the summary statistics above – a negative minimum, and a very high maximum). What types of hotels are these? Locate these observations in the dataset and find out the arrival date (year and month) as well as how many people (adults, children, and babies) stayed in the room. You can investigate the data in the viewer to locate these values, but preferably you should identify them in a reproducible way with some code.</p>
-<p><strong>Hint:</strong> For example, you can <code>filter</code> for the given <code>adr</code> amounts and <code>select</code> the relevant columns.</p>
-<pre class="r"><code># add code here
-# pay attention to correctness and code style</code></pre>
+<pre class="r"><code>hotels %&gt;%
+  filter(adr &lt; 0)%&gt;%
+  select(hotel, arrival_date_year, arrival_date_month, adults, children, babies)</code></pre>
+<pre><code>## # A tibble: 1 × 6
+##   hotel        arrival_date_year arrival_date_month adults children babies
+##   &lt;chr&gt;                    &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Resort Hotel              2017 March                   2        0      0</code></pre>
+<pre class="r"><code>hotels %&gt;%
+  filter(adr &gt; 5000)%&gt;%
+  select(hotel, arrival_date_year, arrival_date_month, adults, children, babies)</code></pre>
+<pre><code>## # A tibble: 1 × 6
+##   hotel      arrival_date_year arrival_date_month adults children babies
+##   &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 City Hotel              2016 March                   2        0      0</code></pre>
 </div>
 </div>
 <div id="data-dictionary" class="section level2">

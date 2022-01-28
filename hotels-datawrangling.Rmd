@@ -78,13 +78,12 @@ results in descending order so the most common observation is on top. What is
 the most common number of adults in bookings in this dataset? Are there any 
 surprising results?
 
-**Note:** Don't forget to label your R chunk as well (where it says `label-me-1`). 
-Your label should be short, informative, and shouldn't include spaces. It also 
-shouldn't repeat a previous label, otherwise R Markdown will give you an 
-error about repeated R chunk labels.
+The most is 2 adults. 403 with no adults is suprirsing- kids rule the world? Also 26 and 27 is there but no 21-25? And missing many of the teens. Weird
 
-```{r adults}
-
+```{r adult-frequency}
+hotels %>%
+  count(adults)%>%
+  arrange(desc(n))
 ```
 
 ### Exercise 6.
@@ -95,10 +94,18 @@ reveal about the surprising results you spotted in the previous exercise?
 
 **Note:** Don't forget to label your R chunk as well (where it says `label-me-2`). 
 
-```{r label-me-2}
-# add code here
-# pay attention to correctness and code style
+```{r canceled-bookings}
+hotels %>%
+  count(adults, is_canceled == 1)%>%
+  arrange(desc(n))
 ```
+
+```{r not-canceled-bookings}
+hotels %>%
+  count(adults, is_canceled == 0)%>%
+  arrange(desc(n))
+```
+Most of the children parties canceled! 
 
 ### Exercise 7.
 
@@ -106,9 +113,12 @@ Calculate minimum, mean, median, and maximum average daily rate (`adr`) grouped
 by `hotel` type so that you can get these statistics separately for resort and 
 city hotels. Which type of hotel is higher, on average? 
 
-```{r label-me-3}
-# add code here
-# pay attention to correctness and code style
+City hotel
+
+```{r summ-stats}
+hotels%>%
+  group_by(hotel)%>%
+  summarize(min_adr = min(adr), mean_adr=mean(adr), median_adr=median(adr), max_adr = max(adr))
 ```
 
 ### Exercise 8.
@@ -120,14 +130,17 @@ month) as well as how many people (adults, children, and babies) stayed in
 the room. You can investigate the data in the viewer to locate these values, but 
 preferably you should identify them in a reproducible way with some code. 
 
-**Hint:** For example, you can `filter` for the given `adr` amounts and 
-`select` the relevant columns.
 
-```{r label-me-4}
-# add code here
-# pay attention to correctness and code style
+```{r investigate-min}
+hotels %>%
+  filter(adr < 0)%>%
+  select(hotel, arrival_date_year, arrival_date_month, adults, children, babies)
 ```
-
+```{r investigate-max}
+hotels %>%
+  filter(adr > 5000)%>%
+  select(hotel, arrival_date_year, arrival_date_month, adults, children, babies)
+```
 
 ## Data dictionary
 
